@@ -24,6 +24,13 @@ public class CancelationExample : IExample
 		try
 		{
 			cancellationTokenSource = new();
+
+			// use to take action when task is canceled
+			cancellationTokenSource.Token.Register(() =>
+			{
+				AppLoger.LogError("Task was canceled");
+			});
+
 			AppLoger.LogSuccess("********* [start reading lines] *********");
 			Task<List<string>> loadedLines = AppFileManager.ReadAllLines("customers-100.csv", cancellationTokenSource.Token);
 
@@ -31,6 +38,7 @@ public class CancelationExample : IExample
 			{
 				AppLoger.LogError(task.Exception?.InnerException?.Message);
 			}, TaskContinuationOptions.OnlyOnFaulted);
+
 
 			var customers = loadedLines.ContinueWith((task) =>
 			{
@@ -44,7 +52,10 @@ public class CancelationExample : IExample
 			customers.ContinueWith(task =>
 			{
 				AppLoger.LogError(task.Exception?.InnerException?.Message);
-			}, TaskContinuationOptions.OnlyOnFaulted);
+			}, 
+			cancellationTokenSource.Token,
+			TaskContinuationOptions.OnlyOnFaulted,
+			TaskScheduler.Current);
 
 
 			customers.ContinueWith((task) =>
