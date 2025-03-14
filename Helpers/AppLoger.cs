@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AsyncApp.Helpers;
 
-public class AppLoger
+public class AppLogger
 {
 	public static void LogError(string? message)
 	{

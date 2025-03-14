@@ -10,14 +10,14 @@ public class BasicExample : IExample
 		{
 			var loadedLines = Task.Run(() =>
 			{
-				AppLoger.LogSuccess("********* [start reading lines] *********");
+				AppLogger.LogSuccess("********* [start reading lines] *********");
 				var data = AppFileManager.ReadAllLines("customers-100.csv");
 				return data;
 			});
 
 			var customers = loadedLines.ContinueWith((task) =>
 			{
-				AppLoger.LogSuccess("********* [start processing lines] *********");
+				AppLogger.LogSuccess("********* [start processing lines] *********");
 				var lines = task.Result.Skip(1);
 
 				return AppFileManager.GetCustomers(lines);
@@ -26,7 +26,7 @@ public class BasicExample : IExample
 
 			_ = customers.ContinueWith((task) =>
 			{
-				AppLoger.LogSuccess("********* [start displaying customers] *********");
+				AppLogger.LogSuccess("********* [start displaying customers] *********");
 
 				if (task.Status == TaskStatus.RanToCompletion)
 				{
@@ -36,7 +36,7 @@ public class BasicExample : IExample
 					}
 				}
 
-				AppLoger.LogSuccess("********* complete *********");
+				AppLogger.LogSuccess("********* complete *********");
 			});
 
 		}

@@ -10,19 +10,19 @@ public class CatchExceptionExample : IExample
 		{
 			var loadedLines = Task.Run(() =>
 			{
-				AppLoger.LogSuccess("********* [start reading lines] *********");
+				AppLogger.LogSuccess("********* [start reading lines] *********");
 				var data = AppFileManager.ReadAllLines("customers-100.csv");
 				return data;
 			});
 
 			loadedLines.ContinueWith(task =>
 			{
-				AppLoger.LogError(task.Exception?.InnerException?.Message);
+				AppLogger.LogError(task.Exception?.InnerException?.Message);
 			}, TaskContinuationOptions.OnlyOnFaulted);
 
 			var customers = loadedLines.ContinueWith((task) =>
 			{
-				AppLoger.LogSuccess("********* [start processing lines] *********");
+				AppLogger.LogSuccess("********* [start processing lines] *********");
 				var lines = task.Result.Skip(1);
 
 				return AppFileManager.GetCustomers(lines);
@@ -31,13 +31,13 @@ public class CatchExceptionExample : IExample
 
 			loadedLines.ContinueWith(task =>
 			{
-				AppLoger.LogError(task.Exception?.InnerException?.Message);
+				AppLogger.LogError(task.Exception?.InnerException?.Message);
 			}, TaskContinuationOptions.OnlyOnFaulted);
 
 
 			_ = customers.ContinueWith((task) =>
 			{
-				AppLoger.LogSuccess("********* [start displaying customers] *********");
+				AppLogger.LogSuccess("********* [start displaying customers] *********");
 
 				if (task.Status == TaskStatus.RanToCompletion)
 				{
@@ -47,7 +47,7 @@ public class CatchExceptionExample : IExample
 					}
 				}
 
-				AppLoger.LogSuccess("********* complete *********");
+				AppLogger.LogSuccess("********* complete *********");
 			}, TaskContinuationOptions.OnlyOnRanToCompletion);
 		}
 		catch (Exception ex)

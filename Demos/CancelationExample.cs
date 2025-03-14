@@ -17,7 +17,7 @@ public class CancelationExample : IExample
 			cancellationTokenSource.Cancel();
 			cancellationTokenSource.Dispose();
 			cancellationTokenSource = null;
-			AppLoger.LogSuccess("Task was canceled");
+			AppLogger.LogSuccess("Task was canceled");
 			return;
 		}
 
@@ -28,21 +28,21 @@ public class CancelationExample : IExample
 			// use to take action when task is canceled
 			cancellationTokenSource.Token.Register(() =>
 			{
-				AppLoger.LogError("Task was canceled");
+				AppLogger.LogError("Task was canceled");
 			});
 
-			AppLoger.LogSuccess("********* [start reading lines] *********");
+			AppLogger.LogSuccess("********* [start reading lines] *********");
 			Task<List<string>> loadedLines = AppFileManager.ReadAllLines("customers-100.csv", cancellationTokenSource.Token);
 
 			loadedLines.ContinueWith(task =>
 			{
-				AppLoger.LogError(task.Exception?.InnerException?.Message);
+				AppLogger.LogError(task.Exception?.InnerException?.Message);
 			}, TaskContinuationOptions.OnlyOnFaulted);
 
 
 			var customers = loadedLines.ContinueWith((task) =>
 			{
-				AppLoger.LogSuccess("********* [start processing lines] *********");
+				AppLogger.LogSuccess("********* [start processing lines] *********");
 				var lines = task.Result.Skip(1);
 
 				return AppFileManager.GetCustomers(lines, cancellationTokenSource.Token).Result;
@@ -51,7 +51,7 @@ public class CancelationExample : IExample
 
 			customers.ContinueWith(task =>
 			{
-				AppLoger.LogError(task.Exception?.InnerException?.Message);
+				AppLogger.LogError(task.Exception?.InnerException?.Message);
 			}, 
 			cancellationTokenSource.Token,
 			TaskContinuationOptions.OnlyOnFaulted,
@@ -60,7 +60,7 @@ public class CancelationExample : IExample
 
 			customers.ContinueWith((task) =>
 			{
-				AppLoger.LogSuccess("********* [start displaying customers] *********");
+				AppLogger.LogSuccess("********* [start displaying customers] *********");
 
 				if (task.Status == TaskStatus.RanToCompletion)
 				{
@@ -70,7 +70,7 @@ public class CancelationExample : IExample
 					}
 				}
 
-				AppLoger.LogSuccess("********* complete *********");
+				AppLogger.LogSuccess("********* complete *********");
 
 				cancellationTokenSource.Dispose();
 				cancellationTokenSource = null;
